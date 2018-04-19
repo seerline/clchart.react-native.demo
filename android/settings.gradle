@@ -1,3 +1,5 @@
 rootProject.name = 'RNClChart'
+include ':react-native-gcanvas'
+project(':react-native-gcanvas').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gcanvas/android')
 
 include ':app'
