@@ -39,7 +39,8 @@ ReactNativeBridge.Platform = Platform;
 ReactNativeBridge.GCanvasModule.setLogLevel(0);
 
 
-const canvas = {width:width, height:height - 200}
+const containerLayout = { width:width, height: (height - 200) }
+const canvasLayout = { width:width * 2, height: (height - 200) * 2 }
 
 export default class App extends Component<{}> {
 
@@ -52,7 +53,7 @@ export default class App extends Component<{}> {
   onPressHandle = () => {
     var ref = this.refs.canvas_holder;
     var canvas_tag = findNodeHandle(ref);
-    var el = { ref:""+canvas_tag, style: canvas};
+    var el = { ref:""+canvas_tag, style: canvasLayout};
     ref = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
     this.canvasRef = ref;
     var ctx = ref.getContext('2d');
@@ -60,9 +61,19 @@ export default class App extends Component<{}> {
 
     // create Chart
     const syscfg = {
-			scale: 1,
-			context: ctx,
-			eventPlatform: 'react-native'
+			scale: 2,
+      context: ctx,
+      runPlatform: 'react-native',
+      eventPlatform: 'react-native',
+      axisPlatform: 'phone',
+      tools: {
+        beforePaint: () => {
+          this.canvasCtx.scale(0.5, 0.5);
+        },
+        afterPaint: () => {
+          this.canvasRef._swapBuffers();
+        }
+      }
 		}
     this.Chart = ClChart.createSingleChart(syscfg)
     Chart = this.Chart
@@ -80,9 +91,9 @@ export default class App extends Component<{}> {
     this.Chart.setData('TICK', ClChart.DEF_DATA.FIELD_TICK, getMockData(code, 'TICK'))
     this.Chart.setData('NOW', ClChart.DEF_DATA.FIELD_NOW, getMockData(code, 'NOW'))
     // 设置画布尺寸
-    let mainHeight = canvas.height * 2 / 3
-    let mainWidth = Math.max(canvas.width * 0.65, canvas.width - 400)
-    if (code === 'SH000001') mainWidth = canvas.width
+    let mainHeight = canvasLayout.height * 2 / 3
+    let mainWidth = Math.max(canvasLayout.width * 0.65, canvasLayout.width - 400)
+    if (code === 'SH000001') mainWidth = canvasLayout.width
     // 设置画布区域布局
     const mainLayoutCfg = {
       layout: ClChart.DEF_CHART.CHART_LAYOUT,
@@ -106,7 +117,7 @@ export default class App extends Component<{}> {
         left: 0,
         top: mainHeight,
         width: mainWidth,
-        height: canvas.height - mainHeight
+        height: canvasLayout.height - mainHeight
       }
     }
     const volumeChart = this.Chart.createChart('MINNOW', 'CHART.LINE', volumeLoyoutCfg, function (result) {
@@ -121,8 +132,8 @@ export default class App extends Component<{}> {
         rectMain: {
           left: mainWidth,
           top: 0,
-          width: canvas.width - mainWidth,
-          height: canvas.height
+          width: canvasLayout.width - mainWidth,
+          height: canvasLayout.height
         }
       }
       const orderChart = this.Chart.createChart('ORDER', 'CHART.ORDER', orderLayoutCfg, function (result) {
@@ -133,7 +144,6 @@ export default class App extends Component<{}> {
     }
 
     this.Chart.onPaint()
-    this.canvasRef._swapBuffers();
   }
 
   // 画日线
@@ -145,7 +155,7 @@ export default class App extends Component<{}> {
     this.Chart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData(code, 'INFO'))
     this.Chart.setData('RIGHT', ClChart.DEF_DATA.FIELD_RIGHT, getMockData(code, 'RIGHT'))
     this.Chart.setData(source, ClChart.DEF_DATA.FIELD_DAY, getMockData(code, source))
-    const mainHeight = canvas.height * 2 / 3
+    const mainHeight = canvasLayout.height * 2 / 3
     const mainLayoutCfg = {
       layout: {
         offset: {
@@ -158,7 +168,7 @@ export default class App extends Component<{}> {
       rectMain: {
         left: 0,
         top: 0,
-        width: canvas.width,
+        width: canvasLayout.width,
         height: mainHeight
       }
     }
@@ -178,8 +188,8 @@ export default class App extends Component<{}> {
       rectMain: {
         left: 0,
         top: mainHeight,
-        width: canvas.width,
-        height: canvas.height - mainHeight
+        width: canvasLayout.width,
+        height: canvasLayout.height - mainHeight
       }
     }
     const KVBarChart = this.Chart.createChart('VBAR', 'CHART.LINE', volumeLoyoutCfg, function (result) {
@@ -188,7 +198,6 @@ export default class App extends Component<{}> {
     this.Chart.bindData(KVBarChart, peroid)
 
     this.Chart.onPaint()
-    this.canvasRef._swapBuffers();
   }
 
   handleSeer = () => {
@@ -199,7 +208,7 @@ export default class App extends Component<{}> {
     this.Chart.setData('DAY', ClChart.DEF_DATA.FIELD_DAY, getMockData('SZ300545', 'DAY'))
     this.Chart.setData('SEER', ClChart.PLUGINS.FIELD_SEER, getMockData('SZ300545', 'SEER'))
     this.Chart.setData('SEERHOT', {}, ['15'])
-    const mainHeight = canvas.height * 2 / 3
+    const mainHeight = canvasLayout.height * 2 / 3
     const mainLayoutCfg = {
       layout: {
         offset: {
@@ -214,7 +223,7 @@ export default class App extends Component<{}> {
       rectMain: {
         left: 0,
         top: 0,
-        width: canvas.width,
+        width: canvasLayout.width,
         height: mainHeight
       }
     }
@@ -236,8 +245,8 @@ export default class App extends Component<{}> {
       rectMain: {
         left: 0,
         top: mainHeight,
-        width: canvas.width,
-        height: canvas.height - mainHeight
+        width: canvasLayout.width,
+        height: canvasLayout.height - mainHeight
       }
     }
     const KVBarChart = this.Chart.createChart('VBAR', 'CHART.LINE', volumeLayoutCfg, function (result) {
@@ -246,7 +255,6 @@ export default class App extends Component<{}> {
     this.Chart.bindData(KVBarChart, 'DAY')
 
     this.Chart.onPaint()
-    this.canvasRef._swapBuffers();
   }
 
   render() {
@@ -295,7 +303,7 @@ export default class App extends Component<{}> {
             title={'SZ300545 SEER'}
           />
         </View>
-        <GCanvasView ref='canvas_holder' style={[styles.gcanvas, canvas]}>
+        <GCanvasView ref='canvas_holder' style={[styles.gcanvas, containerLayout]}>
         </GCanvasView>
       </View>
     );
@@ -305,7 +313,11 @@ export default class App extends Component<{}> {
 const styles = StyleSheet.create({
   gcanvas: {
     top: 20,
-    backgroundColor: '#FF000030'
+    backgroundColor: '#FF000030',
+    // transform: [{ scale: 0.5 }],
+    // scale: 0.5
+    // zoom: 0.5
+    // resizeMode: 'cover'
   },
   container: {
     flex: 1,
