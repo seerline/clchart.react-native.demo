@@ -14,7 +14,6 @@ import {
   Button,
   Dimensions,
   PixelRatio,
-  PanResponder
 } from 'react-native';
 
 
@@ -60,36 +59,6 @@ export default class App extends Component<{}> {
 
   Chart = null
 
-  _panResponder = PanResponder.create({
-    // Ask to be the responder:
-    onStartShouldSetPanResponder: (evt, gestureState) => true,
-    onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-    onMoveShouldSetPanResponder: (evt, gestureState) => true,
-    onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-
-    onPanResponderGrant: (evt, gestureState) => {
-      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
-      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
-      eventCentral.emit('touchstart', evt.nativeEvent)
-    },
-    onPanResponderMove: (evt, gestureState) => {
-      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
-      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
-      eventCentral.emit('touchmove', evt.nativeEvent)
-    },
-    onPanResponderTerminationRequest: (evt, gestureState) => true,
-    onPanResponderRelease: (evt, gestureState) => {
-      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
-      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
-      eventCentral.emit('touchend', evt.nativeEvent)
-    },
-    onPanResponderTerminate: (evt, gestureState) => {
-    },
-    onShouldBlockNativeResponder: (evt, gestureState) => {
-      return true;
-    },
-  });
-  
 
   onPressHandle = () => {
     var ref = this.canvas_holder;
@@ -341,21 +310,31 @@ export default class App extends Component<{}> {
             title={'SZ300545 SEER'}
           />
         </View>
-        <View
-          style={containerLayout}
-          {...this._panResponder.panHandlers}
+        <GCanvasView
+          onLayout={() => {
+            this.onPressHandle()
+          }}
+          onTouchStart={(evt) => {
+            evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+            evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+            eventCentral.emit('touchstart', evt.nativeEvent)
+          }}
+          onTouchMove={(evt) => {
+            evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+            evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+            eventCentral.emit('touchmove', evt.nativeEvent)
+          }}
+          onTouchEnd={(evt) => {
+            evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+            evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+            eventCentral.emit('touchend', evt.nativeEvent)
+          }}
+          ref={(c) => {
+            this.canvas_holder = c
+          }}
+          style={[styles.gcanvas, containerLayout]}
         >
-          <GCanvasView
-            onLayout={() => {
-              this.onPressHandle()
-            }}
-            ref={(c) => {
-              this.canvas_holder = c
-            }}
-            style={[styles.gcanvas, containerLayout]}
-          >
-          </GCanvasView>
-        </View>
+        </GCanvasView>
       </View>
     );
   }
