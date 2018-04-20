@@ -59,21 +59,22 @@ export default class App extends Component<{}> {
 
   mainChart = null
 
+  cursorCanvasRef = null;
 
-  onPressHandle = () => {
-    var ref = this.mainCanvasRef;
-    var canvas_tag = findNodeHandle(ref);
-    var el = { ref:""+canvas_tag, style: canvasLayout};
-    ref = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
-    this.mainCanvas = ref;
-    var ctx = ref.getContext('2d');
-    this.mainContext = ctx
+  cursorContext = null;
 
-    // create mainChart
+  cursorCanvas = null;
+
+  cursorChart = null
+
+  initChart = () => {
+    if (this.mainChart) {
+      return
+    }
     const syscfg = {
       canvas: eventCentral,
-			scale: deviceScale,
-      context: ctx,
+      scale: deviceScale,
+      context: this.mainContext,
       runPlatform: 'react-native',
       eventPlatform: 'react-native',
       axisPlatform: 'phone',
@@ -85,10 +86,30 @@ export default class App extends Component<{}> {
           this.mainCanvas._swapBuffers();
         }
       }
-		}
+    }
     this.mainChart = ClChart.createSingleChart(syscfg)
-    mainChart = this.mainChart
-  };
+  }
+
+  onMainCanvasLayout = () => {
+    const canvas_tag = findNodeHandle(this.mainCanvasRef);
+    const el = { ref:""+canvas_tag, style: canvasLayout};
+    this.mainCanvas = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
+    this.mainContext = this.mainCanvas.getContext('2d');
+    this.initChart();
+  }
+
+  onCursorCanvasLayout = () => {
+    const canvas_tag = findNodeHandle(this.cursorCanvasRef);
+    const el = { ref:""+canvas_tag, style: canvasLayout};
+    this.cursorCanvas = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
+    this.cursorContext = this.cursorCanvas.getContext('2d');
+    this.initChart();
+  }
+
+  componentDidMount() {
+    
+  }
+
   
   handleMin = (code) => {
     console.log('Draw ====> Min Line')
@@ -311,9 +332,7 @@ export default class App extends Component<{}> {
           />
         </View>
         <GCanvasView
-          onLayout={() => {
-            this.onPressHandle()
-          }}
+          onLayout={this.onMainCanvasLayout}
           onTouchStart={(evt) => {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
             evt.nativeEvent.offsetY = evt.nativeEvent.locationY
@@ -331,6 +350,14 @@ export default class App extends Component<{}> {
           }}
           ref={(c) => {
             this.mainCanvasRef = c
+          }}
+          style={[styles.gcanvas, containerLayout]}
+        >
+        </GCanvasView>
+        <GCanvasView
+          onLayout={this.onCursorCanvasLayout}
+          ref={(c) => {
+            this.cursorCanvasRef = c
           }}
           style={[styles.gcanvas, containerLayout]}
         >
