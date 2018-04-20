@@ -12,7 +12,8 @@ import {
   View,
   TouchableHighlight,
   Button,
-  Dimensions
+  Dimensions,
+  PixelRatio
 } from 'react-native';
 
 
@@ -39,8 +40,10 @@ ReactNativeBridge.Platform = Platform;
 ReactNativeBridge.GCanvasModule.setLogLevel(0);
 
 
+
+const deviceScale = PixelRatio.get();
 const containerLayout = { width:width, height: (height - 200) }
-const canvasLayout = { width:width * 2, height: (height - 200) * 2 }
+const canvasLayout = { width: containerLayout.width * deviceScale, height: containerLayout.height * deviceScale }
 
 export default class App extends Component<{}> {
 
@@ -61,14 +64,14 @@ export default class App extends Component<{}> {
 
     // create Chart
     const syscfg = {
-			scale: 2,
+			scale: deviceScale,
       context: ctx,
       runPlatform: 'react-native',
       eventPlatform: 'react-native',
       axisPlatform: 'phone',
       tools: {
         beforePaint: () => {
-          this.canvasCtx.scale(0.5, 0.5);
+          this.canvasCtx.scale(1 / deviceScale, 1 / deviceScale);
         },
         afterPaint: () => {
           this.canvasRef._swapBuffers();
@@ -314,10 +317,6 @@ const styles = StyleSheet.create({
   gcanvas: {
     top: 20,
     backgroundColor: '#FF000030',
-    // transform: [{ scale: 0.5 }],
-    // scale: 0.5
-    // zoom: 0.5
-    // resizeMode: 'cover'
   },
   container: {
     flex: 1,
