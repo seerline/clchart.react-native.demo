@@ -13,7 +13,8 @@ import {
   TouchableHighlight,
   Button,
   Dimensions,
-  PixelRatio
+  PixelRatio,
+  PanResponder
 } from 'react-native';
 
 
@@ -30,6 +31,8 @@ import {
   GCanvasView,
 } from 'react-native-gcanvas';
 
+import EV from './EV';
+
 import { enable, ReactNativeBridge, Image as GImage } from "./gcanvas";
 import getMockData from './stockdata';
 import * as ClChart from './clchart/cl.api'
@@ -45,7 +48,11 @@ const deviceScale = PixelRatio.get();
 const containerLayout = { width:width, height: (height - 200) }
 const canvasLayout = { width: containerLayout.width * deviceScale, height: containerLayout.height * deviceScale }
 
+const eventCentral = new EV();
+
 export default class App extends Component<{}> {
+
+  canvas_holder = null;
 
   canvasCtx = null;
 
@@ -53,8 +60,39 @@ export default class App extends Component<{}> {
 
   Chart = null
 
+  _panResponder = PanResponder.create({
+    // Ask to be the responder:
+    onStartShouldSetPanResponder: (evt, gestureState) => true,
+    onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onMoveShouldSetPanResponder: (evt, gestureState) => true,
+    onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+
+    onPanResponderGrant: (evt, gestureState) => {
+      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+      eventCentral.emit('touchstart', evt.nativeEvent)
+    },
+    onPanResponderMove: (evt, gestureState) => {
+      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+      eventCentral.emit('touchmove', evt.nativeEvent)
+    },
+    onPanResponderTerminationRequest: (evt, gestureState) => true,
+    onPanResponderRelease: (evt, gestureState) => {
+      evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+      evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+      eventCentral.emit('touchend', evt.nativeEvent)
+    },
+    onPanResponderTerminate: (evt, gestureState) => {
+    },
+    onShouldBlockNativeResponder: (evt, gestureState) => {
+      return true;
+    },
+  });
+  
+
   onPressHandle = () => {
-    var ref = this.refs.canvas_holder;
+    var ref = this.canvas_holder;
     var canvas_tag = findNodeHandle(ref);
     var el = { ref:""+canvas_tag, style: canvasLayout};
     ref = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
@@ -64,6 +102,7 @@ export default class App extends Component<{}> {
 
     // create Chart
     const syscfg = {
+      canvas: eventCentral,
 			scale: deviceScale,
       context: ctx,
       runPlatform: 'react-native',
@@ -262,11 +301,7 @@ export default class App extends Component<{}> {
 
   render() {
     return (
-      <View
-        onLayout={() => {
-          this.onPressHandle()
-        }}
-      >
+      <View>
         <View
           style={{flexDirection: 'row', marginTop: 20, flexWrap: 'wrap'}}
         >
@@ -306,8 +341,21 @@ export default class App extends Component<{}> {
             title={'SZ300545 SEER'}
           />
         </View>
-        <GCanvasView ref='canvas_holder' style={[styles.gcanvas, containerLayout]}>
-        </GCanvasView>
+        <View
+          style={containerLayout}
+          {...this._panResponder.panHandlers}
+        >
+          <GCanvasView
+            onLayout={() => {
+              this.onPressHandle()
+            }}
+            ref={(c) => {
+              this.canvas_holder = c
+            }}
+            style={[styles.gcanvas, containerLayout]}
+          >
+          </GCanvasView>
+        </View>
       </View>
     );
   }

@@ -12,7 +12,9 @@ import {
   _setLineWidth,
   _getTxtWidth,
   _drawBegin,
-  _drawEnd
+  _drawEnd,
+  _beforePaint,
+  _afterPaint
 } from '../util/cl.draw'
 import {
   findLabelToIndex,
@@ -518,6 +520,7 @@ export default function ClChartLine (father) {
     }
   }
   this.onPaint = function () {
+    _beforePaint && _beforePaint()
     this.beforeLocation() // 数据定位前需要做的事情
 
     this.data = this.father.getData(this.hotKey)
@@ -541,6 +544,7 @@ export default function ClChartLine (father) {
     this.drawChildCharts()
 
     this.img = _getImageData(this.context, this.rectMain.left, this.rectMain.top, this.rectMain.width, this.rectMain.height)
+    _beforePaint && _afterPaint()
   }
 
   // ///////////////////////////////////////////////////////////
@@ -805,13 +809,14 @@ export default function ClChartLine (father) {
     }
   }
   this.onMouseMove = function (event) {
-    if (this.img === undefined) return
     if (this.linkInfo.hideInfo) return
     if (!this.linkInfo.showCursorLine) return
     // this.draw_clear();
     // 找到X坐标对应的数据索引
     const mousePos = event.mousePos
-    _putImageData(this.context, this.img, this.rectMain.left, this.rectMain.top)
+    if (this.img !== undefined) {
+      _putImageData(this.context, this.img, this.rectMain.left, this.rectMain.top)
+    }
 
     const mouseIndex = this.getMouseMoveData(mousePos.x)
     let idx, valueY
@@ -837,7 +842,9 @@ export default function ClChartLine (father) {
         })
       }
     }
+    _beforePaint && _beforePaint()
     this.childDraws['CURSOR'].onPaint(mousePos, valueX, valueY)
+    _beforePaint && _afterPaint()
   }
 
   // 事件监听
