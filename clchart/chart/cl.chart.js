@@ -17,6 +17,7 @@ import ClChartOrder from './cl.chart.order'
 // import ClChartScroll from './cl.chart.scroll';
 // import getValue from '../data/cl.data.tools';
 import { setColor, setStandard, _systemInfo } from '../chart/cl.chart.init'
+import { _beforePaint, _afterPaint } from '../util/cl.draw'
 
 // 必须包含 context，其他初始化信息参考initSystem
 function ClChart (context) {
@@ -157,7 +158,6 @@ function ClChart (context) {
   // callback 表示鼠标移动时返回的当前记录数据
   // //////////////////////////////////////////////
   this.createChart = function (name, className, usercfg, callback) {
-
     // if (!inArray(className, [
     //   ClChartButton,
     //   ClChartLine,
@@ -184,6 +184,7 @@ function ClChart (context) {
 
   // 以下是chart画图的接口
   this.onPaint = function (chart) { // 需要重画时调用
+    _beforePaint()
     this.fastDrawBegin()
 
     for (const key in this.childCharts) {
@@ -196,6 +197,7 @@ function ClChart (context) {
       }
     }
     // this.fastDrawEnd();
+    _afterPaint()
   }
   // 用于同一组多图只取一次数据，这样可以加速显示，程序结构不会乱
   this.fastDrawBegin = function () {
