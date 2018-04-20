@@ -353,17 +353,11 @@ export default class App extends Component<{}> {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
             evt.nativeEvent.offsetY = evt.nativeEvent.locationY
             eventCentral.emit('touchstart', evt.nativeEvent)
-            this.start = new Date()
           }}
           onTouchMove={(evt) => {
-            if (Date.now() - this.start > 100) {
-              evt.nativeEvent.offsetX = evt.nativeEvent.locationX
-              evt.nativeEvent.offsetY = evt.nativeEvent.locationY
-              eventCentral.emit('touchmove', evt.nativeEvent)         
-            } else {
-              this.start = Date.now();
-            }
-
+            evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+            evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+            eventCentral.emit('touchmove', evt.nativeEvent)         
           }}
           onTouchEnd={(evt) => {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
