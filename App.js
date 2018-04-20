@@ -51,25 +51,25 @@ const eventCentral = new EV();
 
 export default class App extends Component<{}> {
 
-  canvas_holder = null;
+  mainCanvasRef = null;
 
-  canvasCtx = null;
+  mainContext = null;
 
-  canvasRef = null;
+  mainCanvas = null;
 
-  Chart = null
+  mainChart = null
 
 
   onPressHandle = () => {
-    var ref = this.canvas_holder;
+    var ref = this.mainCanvasRef;
     var canvas_tag = findNodeHandle(ref);
     var el = { ref:""+canvas_tag, style: canvasLayout};
     ref = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
-    this.canvasRef = ref;
+    this.mainCanvas = ref;
     var ctx = ref.getContext('2d');
-    this.canvasCtx = ctx
+    this.mainContext = ctx
 
-    // create Chart
+    // create mainChart
     const syscfg = {
       canvas: eventCentral,
 			scale: deviceScale,
@@ -79,28 +79,28 @@ export default class App extends Component<{}> {
       axisPlatform: 'phone',
       tools: {
         beforePaint: () => {
-          this.canvasCtx.scale(1 / deviceScale, 1 / deviceScale);
+          this.mainContext.scale(1 / deviceScale, 1 / deviceScale);
         },
         afterPaint: () => {
-          this.canvasRef._swapBuffers();
+          this.mainCanvas._swapBuffers();
         }
       }
 		}
-    this.Chart = ClChart.createSingleChart(syscfg)
-    Chart = this.Chart
+    this.mainChart = ClChart.createSingleChart(syscfg)
+    mainChart = this.mainChart
   };
   
   handleMin = (code) => {
     console.log('Draw ====> Min Line')
     // 清除画布，及数据
-    this.Chart.clear()
+    this.mainChart.clear()
     // 初始化数据
-    this.Chart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
+    this.mainChart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
     // 设置相应的数据
-    this.Chart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData(code, 'INFO'))
-    this.Chart.setData('MIN', ClChart.DEF_DATA.FIELD_MIN, getMockData(code, 'MIN'))
-    this.Chart.setData('TICK', ClChart.DEF_DATA.FIELD_TICK, getMockData(code, 'TICK'))
-    this.Chart.setData('NOW', ClChart.DEF_DATA.FIELD_NOW, getMockData(code, 'NOW'))
+    this.mainChart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData(code, 'INFO'))
+    this.mainChart.setData('MIN', ClChart.DEF_DATA.FIELD_MIN, getMockData(code, 'MIN'))
+    this.mainChart.setData('TICK', ClChart.DEF_DATA.FIELD_TICK, getMockData(code, 'TICK'))
+    this.mainChart.setData('NOW', ClChart.DEF_DATA.FIELD_NOW, getMockData(code, 'NOW'))
     // 设置画布尺寸
     let mainHeight = canvasLayout.height * 2 / 3
     let mainWidth = Math.max(canvasLayout.width * 0.65, canvasLayout.width - 400)
@@ -116,10 +116,10 @@ export default class App extends Component<{}> {
         height: mainHeight
       }
     }
-    const mainChart = this.Chart.createChart('MIN', 'CHART.LINE', mainLayoutCfg, function (result) {
+    const mainChart = this.mainChart.createChart('MIN', 'CHART.LINE', mainLayoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(mainChart, 'MIN')
+    this.mainChart.bindData(mainChart, 'MIN')
 
     const volumeLoyoutCfg = {
       layout: ClChart.DEF_CHART.CHART_LAYOUT,
@@ -131,10 +131,10 @@ export default class App extends Component<{}> {
         height: canvasLayout.height - mainHeight
       }
     }
-    const volumeChart = this.Chart.createChart('MINNOW', 'CHART.LINE', volumeLoyoutCfg, function (result) {
+    const volumeChart = this.mainChart.createChart('MINNOW', 'CHART.LINE', volumeLoyoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(volumeChart, 'MIN')
+    this.mainChart.bindData(volumeChart, 'MIN')
 
     if (code !== 'SH000001') {
       const orderLayoutCfg = {
@@ -147,25 +147,25 @@ export default class App extends Component<{}> {
           height: canvasLayout.height
         }
       }
-      const orderChart = this.Chart.createChart('ORDER', 'CHART.ORDER', orderLayoutCfg, function (result) {
+      const orderChart = this.mainChart.createChart('ORDER', 'CHART.ORDER', orderLayoutCfg, function (result) {
         //  console.log(result)
       })
       // ??? 为什么可以不绑定数据
-      // this.Chart.bindData(orderChart, 'TICK')
+      // this.mainChart.bindData(orderChart, 'TICK')
     }
 
-    this.Chart.onPaint()
+    this.mainChart.onPaint()
   }
 
   // 画日线
   handleKline = (code, peroid) => {
     let source = peroid
     if (peroid === 'WEEK' || peroid === 'MON') source = 'DAY'
-    this.Chart.clear()
-    this.Chart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
-    this.Chart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData(code, 'INFO'))
-    this.Chart.setData('RIGHT', ClChart.DEF_DATA.FIELD_RIGHT, getMockData(code, 'RIGHT'))
-    this.Chart.setData(source, ClChart.DEF_DATA.FIELD_DAY, getMockData(code, source))
+    this.mainChart.clear()
+    this.mainChart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
+    this.mainChart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData(code, 'INFO'))
+    this.mainChart.setData('RIGHT', ClChart.DEF_DATA.FIELD_RIGHT, getMockData(code, 'RIGHT'))
+    this.mainChart.setData(source, ClChart.DEF_DATA.FIELD_DAY, getMockData(code, source))
     const mainHeight = canvasLayout.height * 2 / 3
     const mainLayoutCfg = {
       layout: {
@@ -183,10 +183,10 @@ export default class App extends Component<{}> {
         height: mainHeight
       }
     }
-    const KBarChart = this.Chart.createChart('KBAR', 'CHART.LINE', mainLayoutCfg, function (result) {
+    const KBarChart = this.mainChart.createChart('KBAR', 'CHART.LINE', mainLayoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(KBarChart, peroid)
+    this.mainChart.bindData(KBarChart, peroid)
 
     const volumeLoyoutCfg = {
       layout: {
@@ -203,22 +203,22 @@ export default class App extends Component<{}> {
         height: canvasLayout.height - mainHeight
       }
     }
-    const KVBarChart = this.Chart.createChart('VBAR', 'CHART.LINE', volumeLoyoutCfg, function (result) {
+    const KVBarChart = this.mainChart.createChart('VBAR', 'CHART.LINE', volumeLoyoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(KVBarChart, peroid)
+    this.mainChart.bindData(KVBarChart, peroid)
 
-    this.Chart.onPaint()
+    this.mainChart.onPaint()
   }
 
   handleSeer = () => {
-    this.Chart.clear()
-    this.Chart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
-    this.Chart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData('SZ300545', 'INFO'))
-    this.Chart.setData('RIGHT', ClChart.DEF_DATA.FIELD_RIGHT, getMockData('SZ300545', 'RIGHT'))
-    this.Chart.setData('DAY', ClChart.DEF_DATA.FIELD_DAY, getMockData('SZ300545', 'DAY'))
-    this.Chart.setData('SEER', ClChart.PLUGINS.FIELD_SEER, getMockData('SZ300545', 'SEER'))
-    this.Chart.setData('SEERHOT', {}, ['15'])
+    this.mainChart.clear()
+    this.mainChart.initData(20180413, ClChart.DEF_DATA.STOCK_TRADETIME)
+    this.mainChart.setData('INFO', ClChart.DEF_DATA.FIELD_INFO, getMockData('SZ300545', 'INFO'))
+    this.mainChart.setData('RIGHT', ClChart.DEF_DATA.FIELD_RIGHT, getMockData('SZ300545', 'RIGHT'))
+    this.mainChart.setData('DAY', ClChart.DEF_DATA.FIELD_DAY, getMockData('SZ300545', 'DAY'))
+    this.mainChart.setData('SEER', ClChart.PLUGINS.FIELD_SEER, getMockData('SZ300545', 'SEER'))
+    this.mainChart.setData('SEERHOT', {}, ['15'])
     const mainHeight = canvasLayout.height * 2 / 3
     const mainLayoutCfg = {
       layout: {
@@ -238,10 +238,10 @@ export default class App extends Component<{}> {
         height: mainHeight
       }
     }
-    const KBarChart = this.Chart.createChart('SEER', 'CHART.LINE', mainLayoutCfg, function (result) {
+    const KBarChart = this.mainChart.createChart('SEER', 'CHART.LINE', mainLayoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(KBarChart, 'DAY')
+    this.mainChart.bindData(KBarChart, 'DAY')
 
     const volumeLayoutCfg = {
       layout: {
@@ -260,12 +260,12 @@ export default class App extends Component<{}> {
         height: canvasLayout.height - mainHeight
       }
     }
-    const KVBarChart = this.Chart.createChart('VBAR', 'CHART.LINE', volumeLayoutCfg, function (result) {
+    const KVBarChart = this.mainChart.createChart('VBAR', 'CHART.LINE', volumeLayoutCfg, function (result) {
       //  console.log(result)
     })
-    this.Chart.bindData(KVBarChart, 'DAY')
+    this.mainChart.bindData(KVBarChart, 'DAY')
 
-    this.Chart.onPaint()
+    this.mainChart.onPaint()
   }
 
   render() {
@@ -330,7 +330,7 @@ export default class App extends Component<{}> {
             eventCentral.emit('touchend', evt.nativeEvent)
           }}
           ref={(c) => {
-            this.canvas_holder = c
+            this.mainCanvasRef = c
           }}
           style={[styles.gcanvas, containerLayout]}
         >
