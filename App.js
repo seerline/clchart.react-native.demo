@@ -72,8 +72,8 @@ export default class App extends Component<{}> {
       return
     }
     const syscfg = {
-      canvas: eventCentral,
       scale: deviceScale,
+      canvas: eventCentral,
       context: this.mainContext,
       runPlatform: 'react-native',
       eventPlatform: 'react-native',
@@ -85,7 +85,15 @@ export default class App extends Component<{}> {
         afterPaint: () => {
           this.mainCanvas._swapBuffers();
         }
-      }
+      },
+      mainCanvas: {
+        canvas: eventCentral,
+        context: this.mainContext,
+      },
+      cursorCanvas: {
+        canvas: eventCentral,
+        context: this.cursorContext,
+      },
     }
     this.mainChart = ClChart.createSingleChart(syscfg)
   }
@@ -105,11 +113,6 @@ export default class App extends Component<{}> {
     this.cursorContext = this.cursorCanvas.getContext('2d');
     this.initChart();
   }
-
-  componentDidMount() {
-    
-  }
-
   
   handleMin = (code) => {
     console.log('Draw ====> Min Line')
@@ -331,8 +334,8 @@ export default class App extends Component<{}> {
             title={'SZ300545 SEER'}
           />
         </View>
-        <GCanvasView
-          onLayout={this.onMainCanvasLayout}
+        <View
+          style={[containerLayout, styles.canvasContainer]}
           onTouchStart={(evt) => {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
             evt.nativeEvent.offsetY = evt.nativeEvent.locationY
@@ -348,29 +351,41 @@ export default class App extends Component<{}> {
             evt.nativeEvent.offsetY = evt.nativeEvent.locationY
             eventCentral.emit('touchend', evt.nativeEvent)
           }}
-          ref={(c) => {
-            this.mainCanvasRef = c
-          }}
-          style={[styles.gcanvas, containerLayout]}
         >
-        </GCanvasView>
-        <GCanvasView
-          onLayout={this.onCursorCanvasLayout}
-          ref={(c) => {
-            this.cursorCanvasRef = c
-          }}
-          style={[styles.gcanvas, containerLayout]}
-        >
-        </GCanvasView>
+          <GCanvasView
+            onLayout={this.onMainCanvasLayout}
+            ref={(c) => {
+              this.mainCanvasRef = c
+            }}
+            style={[styles.gcanvas, containerLayout]}
+          >
+          </GCanvasView>
+          <GCanvasView
+            onLayout={this.onCursorCanvasLayout}
+            ref={(c) => {
+              this.cursorCanvasRef = c
+            }}
+            style={[styles.coverCanvas, containerLayout]}
+          >
+          </GCanvasView>
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  canvasContainer: {
+    position: 'relative'
+  },
   gcanvas: {
-    top: 20,
     backgroundColor: '#FF000030',
+  },
+  coverCanvas: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    position: 'absolute',
+    top: 0,
+    left: 0
   },
   container: {
     flex: 1,
