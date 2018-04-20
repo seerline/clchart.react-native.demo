@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "gcanvas.js": "^0.0.8",
+    "lodash": "^4.17.5",
     "react": "16.3.1",
     "react-native": "0.55.3",
     "react-native-gcanvas": "^0.0.7-dev"

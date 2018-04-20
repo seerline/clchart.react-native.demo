@@ -49,6 +49,8 @@ const canvasLayout = { width: containerLayout.width * deviceScale, height: conta
 
 const eventCentral = new EV();
 
+let count = 0
+
 export default class App extends Component<{}> {
 
   mainCanvasRef = null;
@@ -98,6 +100,7 @@ export default class App extends Component<{}> {
     }
     this.mainContext._afterPaint = () => {
       this.mainCanvas._swapBuffers();
+      count ++;
     }
     this.initChart();
   }
@@ -334,6 +337,13 @@ export default class App extends Component<{}> {
               this.handleSeer()
             }}
             title={'SZ300545 SEER'}
+          />
+          <Button 
+            style={styles.button}
+            onPress={() => {
+              alert(count)
+            }}
+            title={'次数'}
           />
         </View>
         <View
