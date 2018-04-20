@@ -158,6 +158,7 @@ export default function ClEventWeb (father) {
     this.father.emitEvent('onKeyDown', info)
   }
   this.click = function (event) {
+    console.log('object')
     this.father.emitEvent('onClick', this.getEventInfo(event))
   }
   // 触摸

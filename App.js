@@ -16,6 +16,7 @@ import {
   PixelRatio,
 } from 'react-native';
 
+import { throttle } from 'lodash'
 
 const {width, height} = Dimensions.get('window');
 
@@ -352,11 +353,17 @@ export default class App extends Component<{}> {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
             evt.nativeEvent.offsetY = evt.nativeEvent.locationY
             eventCentral.emit('touchstart', evt.nativeEvent)
+            this.start = new Date()
           }}
           onTouchMove={(evt) => {
-            evt.nativeEvent.offsetX = evt.nativeEvent.locationX
-            evt.nativeEvent.offsetY = evt.nativeEvent.locationY
-            eventCentral.emit('touchmove', evt.nativeEvent)
+            if (Date.now() - this.start > 100) {
+              evt.nativeEvent.offsetX = evt.nativeEvent.locationX
+              evt.nativeEvent.offsetY = evt.nativeEvent.locationY
+              eventCentral.emit('touchmove', evt.nativeEvent)         
+            } else {
+              this.start = Date.now();
+            }
+
           }}
           onTouchEnd={(evt) => {
             evt.nativeEvent.offsetX = evt.nativeEvent.locationX
