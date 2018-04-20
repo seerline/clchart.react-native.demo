@@ -68,24 +68,14 @@ export default class App extends Component<{}> {
   cursorChart = null
 
   initChart = () => {
-    if (this.mainChart) {
+    if (!this.mainCanvas || !this.cursorCanvas || !this.cursorContext) {
       return
     }
     const syscfg = {
       scale: deviceScale,
-      canvas: eventCentral,
-      context: this.mainContext,
       runPlatform: 'react-native',
       eventPlatform: 'react-native',
       axisPlatform: 'phone',
-      tools: {
-        beforePaint: () => {
-          this.mainContext.scale(1 / deviceScale, 1 / deviceScale);
-        },
-        afterPaint: () => {
-          this.mainCanvas._swapBuffers();
-        }
-      },
       mainCanvas: {
         canvas: eventCentral,
         context: this.mainContext,
@@ -103,6 +93,12 @@ export default class App extends Component<{}> {
     const el = { ref:""+canvas_tag, style: canvasLayout};
     this.mainCanvas = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
     this.mainContext = this.mainCanvas.getContext('2d');
+    this.mainContext._beforePaint = () => {
+      this.mainContext.scale(1 / deviceScale, 1 / deviceScale);
+    }
+    this.mainContext._afterPaint = () => {
+      this.mainCanvas._swapBuffers();
+    }
     this.initChart();
   }
 
@@ -111,6 +107,12 @@ export default class App extends Component<{}> {
     const el = { ref:""+canvas_tag, style: canvasLayout};
     this.cursorCanvas = enable(el, {bridge: ReactNativeBridge, disableAutoSwap: true});
     this.cursorContext = this.cursorCanvas.getContext('2d');
+    this.cursorContext._beforePaint = () => {
+      this.cursorContext.scale(1 / deviceScale, 1 / deviceScale);
+    }
+    this.cursorContext._afterPaint = () => {
+      this.cursorCanvas._swapBuffers();
+    }
     this.initChart();
   }
   
@@ -382,7 +384,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF000030',
   },
   coverCanvas: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     position: 'absolute',
     top: 0,
     left: 0

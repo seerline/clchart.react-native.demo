@@ -7,10 +7,11 @@
 import {
   _getTxtWidth,
   _drawTxtRect,
-  _drawLineAlone
+  _clearRect,
+  _drawLineAlone,
 } from '../util/cl.draw'
 import {
-  initCommonInfo
+  initCommonInfo, _systemInfo
 } from '../chart/cl.chart.init'
 import {
   inRangeX,
@@ -22,6 +23,7 @@ import {
 // 这个类仅仅是画图, 因此需要把可以控制的rect传入进来
 export default function ClDrawCursor (father, rectMain, rectChart) {
   initCommonInfo(this, father)
+  this.rectFather = father.rectMain
   this.rectMain = rectMain // 画十字线和边界标签
   this.rectChart = rectChart // 鼠标有效区域
 
@@ -34,8 +36,19 @@ export default function ClDrawCursor (father, rectMain, rectChart) {
   this.maxmin = father.maxmin
   this.axisX = father.layout.axisX
 
+  this.context = _systemInfo.cursorCanvas.context
+  this.onClear = function () {
+    _clearRect(this.context, this.rectFather.left, this.rectFather.top,
+      this.rectFather.left + this.rectFather.width,
+      this.rectFather.top + this.rectFather.height)
+  }
+
   this.onPaint = function (mousePos, valueX, valueY) {
+    if (typeof this.context._beforePaint === 'function') {
+      this.context._beforePaint()
+    }
     if (inRangeX(this.rectChart, mousePos.x) === false) return
+    this.onClear()
 
     let txt
     let xx = mousePos.x
@@ -112,6 +125,9 @@ export default function ClDrawCursor (father, rectMain, rectChart) {
         x: posX,
         y: 'top'
       })
+    }
+    if (typeof this.context._afterPaint === 'function') {
+      this.context._afterPaint()
     }
   }
 }
