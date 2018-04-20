@@ -8,7 +8,7 @@ import {
   _getTxtWidth,
   _drawTxtRect,
   _clearRect,
-  _drawLineAlone,
+  _drawLineAlone
 } from '../util/cl.draw'
 import {
   initCommonInfo, _systemInfo

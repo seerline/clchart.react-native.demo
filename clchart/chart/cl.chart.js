@@ -17,7 +17,6 @@ import ClChartOrder from './cl.chart.order'
 // import ClChartScroll from './cl.chart.scroll';
 // import getValue from '../data/cl.data.tools';
 import { setColor, setStandard, _systemInfo } from '../chart/cl.chart.init'
-import { _beforePaint, _afterPaint } from '../util/cl.draw'
 
 // 必须包含 context，其他初始化信息参考initSystem
 function ClChart (syscfg) {
