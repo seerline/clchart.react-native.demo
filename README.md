@@ -1,5 +1,7 @@
 # React Native demo for clchart
 
+> Clchart uses [GCanvas](https://github.com/alibaba/GCanvas) for cross-platform drawing.
+
 ## Running
 
 #### Clone & install
@@ -14,7 +16,7 @@
 
 #### Android(Todo)
 
-> GCanvas is difficult for android, so android now support right now.
+> [GCanvas](https://github.com/alibaba/GCanvas) is difficulties integrating on React Native android platform, so android not support right now.
 
 * Run `android avd` and start an emulator
 * Run `react-native run-android`
