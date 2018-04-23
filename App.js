@@ -35,7 +35,7 @@ import EV from './EV';
 
 import { enable, ReactNativeBridge, Image as GImage } from "gcanvas.js";
 import getMockData from './stockdata';
-import * as ClChart from './clchart/cl.api'
+import * as ClChart from 'clchart'
 
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
