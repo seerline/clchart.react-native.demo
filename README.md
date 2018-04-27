@@ -23,10 +23,10 @@
 
 ## Examples
 
-<img src="./source/min_idx.png" alt="min_idx" width="300" height="auto">
-<img src="./source/day.png" alt="day" width="300" height="auto">
-<img src="./source/5day.png" alt="5day" width="300" height="auto">
-<img src="./source/seer.png" alt="seer" width="300" height="auto">
+<img src="./source/min_idx.png" alt="min_idx" width="300" style="display: inline-block">
+<img src="./source/day.png" alt="day" width="300" style="display: inline-block">
+<img src="./source/5day.png" alt="5day" width="300" style="display: inline-block">
+<img src="./source/seer.png" alt="seer" width="300" style="display: inline-block">
 
 
 ## License
