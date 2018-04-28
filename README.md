@@ -21,7 +21,7 @@
 * Run `android avd` and start an emulator
 * Run `react-native run-android`
 
-## Examples
+## Screenshot
 
 <img src="./source/min_idx.png" alt="min_idx" width="300" style="display: inline-block">
 <img src="./source/day.png" alt="day" width="300" style="display: inline-block">
