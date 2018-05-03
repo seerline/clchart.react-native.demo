@@ -31,11 +31,10 @@ import {
   GCanvasView,
 } from 'react-native-gcanvas';
 
-import EV from './EV';
 
 import { enable, ReactNativeBridge, Image as GImage } from "gcanvas.js";
 import getMockData from './stockdata';
-import * as ClChart from 'clchart'
+import * as ClChart from 'clchart';
 
 ReactNativeBridge.GCanvasModule = NativeModules.GCanvasModule;
 ReactNativeBridge.Platform = Platform;
@@ -48,7 +47,7 @@ const deviceScale = PixelRatio.get();
 const containerLayout = { width:width, height: (height - 140) }
 const canvasLayout = { width: containerLayout.width * deviceScale, height: containerLayout.height * deviceScale }
 
-const eventCentral = new EV();
+const eventCentral = new ClChart.util.EV();
 
 let count = 0
 

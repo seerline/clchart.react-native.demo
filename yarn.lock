@@ -1744,9 +1744,9 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-clchart@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/clchart/-/clchart-0.0.3.tgz#a27d9562d1fe671747b26d0de776ea66e70a6b1d"
+clchart@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/clchart/-/clchart-0.0.6.tgz#00e12cbb2a039e5ce55b2388bd820e9689d1bc90"
 
 cli-cursor@^2.1.0:
   version "2.1.0"
